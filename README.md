@@ -1,5 +1,7 @@
 # Pe sârmă
 
+🇷🇴 Română · [🇬🇧 English](#english) · [🇪🇸 Español](#español)
+
 **Pe sârmă — ediția în limba română, publicată și întreținută de Cristi Gordaș.**
 
 Capturile de ecran și tot ce copiezi se agață pe un fir chiar sub bara de meniu.
@@ -72,3 +74,25 @@ Jurnalul local este în `~/Library/Logs/PeSarma/`. Meniul „Diagnostic” permi
 ## Licență
 
 Cod: MIT (vezi [LICENSE](LICENSE)). Numele „Pe sârmă” și pictograma sunt ale acestei ediții.
+
+---
+
+## English
+
+**Pe sârmă — the Romanian edition, published and maintained by Cristi Gordaș.**
+
+Screenshots and everything you copy hang on a line right under the menu bar. Search them by content and use them with direct gestures. Free, open source, macOS 14 or later. No account, no activation key, no subscription. The app follows the system language (Romanian, English, Spanish; Romanian fallback), or a per-app language set in System Settings.
+
+Site and interactive demo: https://gordas.dev/pe-sarma/ · Download: https://github.com/gordasgdc/pe-sarma/releases/latest/download/PeSarma.dmg
+
+Based on [Tendedero](https://github.com/alejandrobujan/tendedero) by Alejandro Buján (MIT). Gestures: click copies, long press annotates, double click previews, drag out sends a copy, Shift-click selects several, ⌘Z undoes, ⌃⌥F searches. Build and logs: see the Romanian sections above.
+
+## Español
+
+**Pe sârmă — la edición en rumano, publicada y mantenida por Cristi Gordaș.**
+
+Las capturas de pantalla y todo lo que copias se cuelgan de un hilo bajo la barra de menús. Búscalas por contenido y úsalas con gestos directos. Gratuita, de código abierto, macOS 14 o posterior. Sin cuenta, sin clave de activación, sin suscripción. La app sigue el idioma del sistema (rumano, inglés, español; rumano por defecto) o el idioma por app de Ajustes del Sistema.
+
+Sitio y demo interactiva: https://gordas.dev/pe-sarma/ · Descarga: https://github.com/gordasgdc/pe-sarma/releases/latest/download/PeSarma.dmg
+
+Basada en [Tendedero](https://github.com/alejandrobujan/tendedero) de Alejandro Buján (MIT). Gestos: clic copia, pulsación larga anota, doble clic previsualiza, arrastrar fuera envía una copia, Shift-clic selecciona varias, ⌘Z deshace, ⌃⌥F busca.
