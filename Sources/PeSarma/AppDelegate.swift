@@ -1080,14 +1080,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     /// glance that the clipboard is being watched. It is dimmed while the
     /// line is empty, so resting in the menu bar and seeing nothing come down
     /// does not look broken.
+    /// The wire, clip and photo symbol, drawn as a template so macOS tints it
+    /// for light and dark menu bars. 18 pt, with a 2x file for Retina.
+    private static let statusImage: NSImage? = {
+        guard let url = Bundle.main.url(forResource: "StatusIcon", withExtension: "png"),
+              let image = NSImage(contentsOf: url) else {
+            return NSImage(systemSymbolName: "photo", accessibilityDescription: nil)
+        }
+        image.size = NSSize(width: 18, height: 18)
+        image.isTemplate = true
+        return image
+    }()
+
     private func updateStatusIcon() {
         let on = ClipboardWatcher.isEnabled
         let count = line.liveCount
         let description = on ? L("Pe sârmă, hanging copied images") : "Pe sârmă"
         let state = count == 0 ? L("The line is empty") : String(format: L("%d on the line"), count)
-        let image = NSImage(systemSymbolName: on ? "tshirt.fill" : "tshirt",
-                            accessibilityDescription: "\(description), \(state)")
-        image?.isTemplate = true
+        let image = Self.statusImage
+        image?.accessibilityDescription = "\(description), \(state)"
         statusItem.button?.image = image
         statusItem.button?.appearsDisabled = count == 0
         statusItem.button?.toolTip = "\(description)\n\(state)"

@@ -44,7 +44,9 @@ cp "$BIN" "$APP/Contents/MacOS/PeSarma"
 
 # Icon
 WORK="$BUILD_DIR/icon-work"; rm -rf "$WORK"; mkdir -p "$WORK"
-swift scripts/make-icon.swift "$WORK/icon.png"
+swift scripts/brand/Logotip.swift "$WORK"
+mv "$WORK/PeSarma-Simbol.png" "$WORK/icon.png"
+cp Sources/PeSarma/Resources/StatusIcon.png Sources/PeSarma/Resources/StatusIcon@2x.png "$APP/Contents/Resources/"
 ICONSET="$WORK/PeSarma.iconset"
 mkdir -p "$ICONSET"
 for s in 16 32 128 256 512; do
