@@ -1,6 +1,12 @@
 # Cum urmărim Tendedero
 
-Pe sârmă este un fork al [Tendedero](https://github.com/alejandrobujan/tendedero) (MIT). Baza fixată pentru 1.0.0 și 1.1.0: `e362da6d92e7ca9dd141de4017eae779dc1e4284` (tag local `upstream-base`).
+Pe sârmă este un fork al [Tendedero](https://github.com/alejandrobujan/tendedero) (MIT). Baza fixată pentru 1.0.0 și 1.1.0: `e362da6d92e7ca9dd141de4017eae779dc1e4284` (tag local `upstream-base`), cu 8 commituri după `upstream/v2.0.0`.
+
+## Taguri
+
+- Taguri proprii (release-uri Pe sârmă): `v1.0.0`, `v1.1.0`… Se împing explicit, unul câte unul.
+- Taguri upstream: doar sub `upstream/` (`upstream/v2.0.0`…), aduse cu `git fetch upstream` (configurat: `+refs/tags/*:refs/tags/upstream/*`). Nu se împing niciodată.
+- `upstream-base` marchează baza curentă preluată.
 
 Ce este al nostru: localizarea (`Sources/PeSarma/Resources/*.lproj`), identitatea (`scripts/brand/`, `scripts/make-brand-assets.sh`), jurnalul de diagnostic (`Diagnostics.swift`), remedierea pornirii watcher-ului, scripturile de distribuție (`scripts/`), site-ul (`site/`), documentația (`README*.md`, `docs/`). Restul codului din `Sources/PeSarma/` este upstream, redenumit.
 
