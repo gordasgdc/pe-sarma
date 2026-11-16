@@ -57,7 +57,7 @@ struct CheckFailed: Error { let message: String }
         window = NSWindow(contentRect: NSRect(x: 80, y: 200, width: 1100, height: 250),
                           styleMask: [.titled], backing: .buffered, defer: false)
         window.isReleasedWhenClosed = false
-        window.title = "Tendedero selection checks — synthetic images"
+        window.title = "Pe sârmă selection checks — synthetic images"
         window.contentView = NSHostingView(rootView: LineView(line: line))
         window.orderFront(nil)
         pump(0.7)
@@ -115,15 +115,15 @@ struct CheckFailed: Error { let message: String }
 
         let menu = try grab(a).menuProvider()
         let titles = menu.items.map(\.title)
-        try check(titles.contains("2 selected"), "Selection menu states how many photos it affects")
-        try check(["Copy", "Open", "Show in Finder", "Share…", "Pin", "Save to Desktop (inbox or Desktop only)", "Take down"].allSatisfy(titles.contains),
+        try check(titles.contains(String(format: L("%d selected"), 2)), "Selection menu states how many photos it affects")
+        try check([L("Copy"), L("Open"), L("Show in Finder"), L("Share…"), L("Pin"), L("Save to Desktop (inbox or Desktop only)"), L("Take down")].allSatisfy(titles.contains),
                   "Selection menu exposes the requested batch actions")
-        try check(["Quick Look", "Hold", "Markup", "Move to Trash", "Take down everything to the left"].allSatisfy { !titles.contains($0) },
+        try check([L("Quick Look"), L("Hold"), L("Markup"), L("Move to Trash"), L("Take down everything to the left")].allSatisfy { !titles.contains($0) },
                   "Single-photo editors and unrelated removal actions are absent from the selection menu")
-        try check(menu.items.first { $0.title == "Save to Desktop (inbox or Desktop only)" }?.isEnabled == false, "External originals cannot be moved by Save to Desktop")
+        try check(menu.items.first { $0.title == L("Save to Desktop (inbox or Desktop only)") }?.isEnabled == false, "External originals cannot be moved by Save to Desktop")
         line.clearSelection()
         line.toggleSelection(bID)
-        try fire("Copy", in: menu)
+        try fire(L("Copy"), in: menu)
         try check(copiedURLs == [a, c], "An open menu acts on its captured selection, not later changes")
         try check(pasteboard.pasteboardItems?.allSatisfy { $0.data(forType: .png) != nil } == true,
                   "Every copied photo has both PNG and file representations")
@@ -158,17 +158,17 @@ struct CheckFailed: Error { let message: String }
 
         line.toggleSelection(cID)
         line.toggleSelection(aID)
-        try fire("Pin", in: try grab(a).menuProvider())
+        try fire(L("Pin"), in: try grab(a).menuProvider())
         try check(line.items.filter { !$0.falling }.map(\.id) == [aID, cID, bID], "Batch pin keeps the selected photos' relative order")
         try check(!line.canDiscard([aID, cID]), "Pinned screenshots are protected from batch discard")
         let pinnedMenu = try grab(a).menuProvider()
-        try check(pinnedMenu.items.first { $0.title == "Take down" }?.isEnabled == false, "Pinned selection disables Take down")
-        try fire("Unpin", in: pinnedMenu)
+        try check(pinnedMenu.items.first { $0.title == L("Take down") }?.isEnabled == false, "Pinned selection disables Take down")
+        try fire(L("Unpin"), in: pinnedMenu)
         try check(line.items.map(\.id) == [aID, cID, bID] && line.keptCount == 0, "Batch unpin preserves relative order")
         let d = try png("D.png")
         let savedMenu = try grab(a).menuProvider()
         let dID = line.hang(d, quietly: true)!
-        try fire("Take down", in: savedMenu)
+        try fire(L("Take down"), in: savedMenu)
         try check(line.items.filter { !$0.falling }.map(\.id) == [bID, dID], "Batch removal does not include new arrivals")
         try check(FileManager.default.fileExists(atPath: a.path) && FileManager.default.fileExists(atPath: c.path), "Taking down external photos preserves both originals")
         try check(line.selectedIDs.isEmpty, "Removed photos leave the selection immediately")
@@ -273,10 +273,10 @@ struct CheckFailed: Error { let message: String }
         mixedIDs.forEach(mixed.toggleSelection)
         show(mixed)
         let mixedMenu = try grab(m1).menuProvider()
-        try check(mixedMenu.items.first { $0.title == "Save to Desktop" }?.isEnabled == true,
+        try check(mixedMenu.items.first { $0.title == L("Save to Desktop") }?.isEnabled == true,
                   "Desktop and external photos do not disable saving selected inbox photos")
         mixed.copy(mixedIDs)
-        try fire("Save to Desktop", in: mixedMenu)
+        try fire(L("Save to Desktop"), in: mixedMenu)
         let moved1 = desktop.appendingPathComponent(m1.lastPathComponent)
         let moved2 = desktop.appendingPathComponent(m2.lastPathComponent)
         let desktopCopy = desktop.appendingPathComponent("Already on Desktop 2.png")
@@ -297,7 +297,7 @@ struct CheckFailed: Error { let message: String }
         mixed.toggleSelection(savedID)
         mixed.toggleSelection(mixedIDs[3])
         let savedOnlyMenu = try grab(alreadySaved).menuProvider()
-        try fire("Save to Desktop", in: savedOnlyMenu)
+        try fire(L("Save to Desktop"), in: savedOnlyMenu)
         try check(mixed.canPutBack && copiedURLs == mixedURLs
                   && FileManager.default.fileExists(atPath: desktopCopy.path),
                   "A selection containing Desktop files can save again even without any inbox files")
@@ -305,20 +305,20 @@ struct CheckFailed: Error { let message: String }
         mixed.clearSelection()
         // A fresh host avoids outgoing cards left by the synchronous runner.
         show(mixed)
-        try check(try grab(alreadySaved).menuProvider().items.first { $0.title == "Save to Desktop" }?.isEnabled == true,
+        try check(try grab(alreadySaved).menuProvider().items.first { $0.title == L("Save to Desktop") }?.isEnabled == true,
                   "A single Desktop photo offers an enabled Save to Desktop action")
-        try check(try grab(b).menuProvider().items.first { $0.title == "Save to Desktop (inbox or Desktop only)" }?.isEnabled == false,
+        try check(try grab(b).menuProvider().items.first { $0.title == L("Save to Desktop (inbox or Desktop only)") }?.isEnabled == false,
                   "A photo outside the inbox and Desktop keeps its original location rule")
-        try check(try grab(m1).menuProvider().items.first { $0.title == "Save to Desktop" }?.isEnabled == true,
+        try check(try grab(m1).menuProvider().items.first { $0.title == L("Save to Desktop") }?.isEnabled == true,
                   "A single inbox photo still offers Save to Desktop")
         mixed.toggleSelection(mixed.items.first { $0.url == alreadySaved && !$0.falling }!.id)
-        try check(try grab(alreadySaved).menuProvider().items.first { $0.title == "Save to Desktop" }?.isEnabled == true,
+        try check(try grab(alreadySaved).menuProvider().items.first { $0.title == L("Save to Desktop") }?.isEnabled == true,
                   "Single-photo and selection menus both allow another Desktop copy")
         mixed.clearSelection()
         let heldInboxID = mixed.items.first { $0.url == m1 && !$0.falling }!.id
         mixed.setHeld(heldInboxID, true)
         show(mixed)
-        try fire("Save to Desktop", in: try grab(m1).menuProvider())
+        try fire(L("Save to Desktop"), in: try grab(m1).menuProvider())
         try check(FileManager.default.fileExists(atPath: moved1.path) && !FileManager.default.fileExists(atPath: m1.path),
                   "The existing single-photo save still works for an inbox photo held in hand")
         mixed.putBack()
@@ -357,7 +357,7 @@ struct CheckFailed: Error { let message: String }
         line.pin(id)
         line.copy(id)
         show(line)
-        try fire("Save to Desktop", in: try grab(original).menuProvider())
+        try fire(L("Save to Desktop"), in: try grab(original).menuProvider())
         try check(try Data(contentsOf: copy) == bytes && Data(contentsOf: original) == bytes
                   && Data(contentsOf: namesake) == namesakeBytes,
                   "Single save creates the next available numbered copy without overwriting Desktop originals")
@@ -515,7 +515,7 @@ struct CheckFailed: Error { let message: String }
 
 @main struct RunSelectionChecks {
     @MainActor static func main() {
-        guard Bundle.main.bundleIdentifier == "local.tendedero.selection-checks", CommandLine.arguments.count == 2 else {
+        guard Bundle.main.bundleIdentifier == "local.pesarma.selection-checks", CommandLine.arguments.count == 2 else {
             fatalError("Run with scripts/test-selection.sh")
         }
         _ = NSApplication.shared

@@ -1,18 +1,37 @@
 #!/bin/bash
-# Builds Tendedero.app and packs it into a disk image for releases.
-# Usage: scripts/make-dmg.sh
+# Builds PeSarma.app, notarizes and staples it, and packs it into a signed,
+# notarized, stapled disk image: PeSarma-<version>.dmg (ASCII file name; the
+# visible names are in Romanian).
+# Usage: [PESARMA_BUILD_DIR=/path] [NOTARY_PROFILE=name] scripts/make-dmg.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+export PESARMA_BUILD_DIR="${PESARMA_BUILD_DIR:-build}"
+mkdir -p "$PESARMA_BUILD_DIR"
+BUILD_DIR="$(cd "$PESARMA_BUILD_DIR" && pwd)"
+export PESARMA_BUILD_DIR="$BUILD_DIR"
 scripts/build-app.sh release
-VERSION="$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' build/Tendedero.app/Contents/Info.plist)"
-DMG="build/Tendedero-$VERSION.dmg"
-NAME="Tendedero"
+APP="$BUILD_DIR/PeSarma.app"
+VERSION="$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$APP/Contents/Info.plist")"
+DMG="$BUILD_DIR/PeSarma-$VERSION.dmg"
+NAME="Pe sârmă"
+PROFILE="${NOTARY_PROFILE:-}"
+IDENTITY="${SIGN_IDENTITY:-$(security find-identity -v -p codesigning 2>/dev/null | awk -F'"' '/Developer ID Application/{print $2; exit}')}"
 
-WORK="$(mktemp -d)"
+# Notarize and staple the app first, so the copy inside the image carries its
+# own ticket and opens offline.
+if [ -n "$IDENTITY" ] && [ -n "$PROFILE" ]; then
+  ZIP="$BUILD_DIR/PeSarma-notarize.zip"
+  ditto -c -k --keepParent "$APP" "$ZIP"
+  xcrun notarytool submit "$ZIP" --keychain-profile "$PROFILE" --wait
+  rm -f "$ZIP"
+  xcrun stapler staple "$APP"
+fi
+
+WORK="$BUILD_DIR/dmg-work"; rm -rf "$WORK"; mkdir -p "$WORK"
 STAGE="$WORK/stage"
 mkdir -p "$STAGE/.background"
-cp -R build/Tendedero.app "$STAGE/"
+cp -R "$APP" "$STAGE/"
 ln -s /Applications "$STAGE/Applications"
 swift scripts/make-dmg-background.swift "$WORK/bg1x.png" 1
 swift scripts/make-dmg-background.swift "$WORK/bg2x.png" 2
@@ -45,7 +64,7 @@ tell application "Finder"
     set icon size of opts to 112
     set text size of opts to 13
     set background picture of opts to file ".background:background.tiff"
-    set position of item "Tendedero.app" of container window to {160, 178}
+    set position of item "PeSarma.app" of container window to {160, 178}
     set position of item "Applications" of container window to {440, 178}
     -- Size last: Finder can resize the window while it applies the options.
     set the bounds of container window to {200, 120, 800, 528}
@@ -67,41 +86,22 @@ rm -rf "$WORK"
 echo "Built $DMG"
 
 # Sign the disk image, send it to Apple for notarization and staple the
-# ticket, so it opens without warnings even offline. Needs a Developer ID and
-# notary credentials stored with:
-#   xcrun notarytool store-credentials tendedero-notary --apple-id ... --team-id ...
-IDENTITY="${SIGN_IDENTITY:-$(security find-identity -v -p codesigning 2>/dev/null | awk -F'"' '/Developer ID Application/{print $2; exit}')}"
-PROFILE="${NOTARY_PROFILE:-tendedero-notary}"
+# ticket. NOTARY_PROFILE names a notarytool keychain profile stored with:
+#   xcrun notarytool store-credentials <name> --apple-id ... --team-id ...
 if [ -n "$IDENTITY" ]; then
   codesign --force --timestamp --sign "$IDENTITY" "$DMG"
-  if xcrun notarytool history --keychain-profile "$PROFILE" >/dev/null 2>&1; then
-    echo "Notarizing, this usually takes a few minutes..."
+  if [ -n "$PROFILE" ]; then
     xcrun notarytool submit "$DMG" --keychain-profile "$PROFILE" --wait
     xcrun stapler staple "$DMG"
     spctl --assess --type open --context context:primary-signature --verbose=2 "$DMG"
   else
-    echo "No notary credentials in profile $PROFILE: the image is signed but not notarized."
+    echo "NOTARY_PROFILE not set: the image is signed but not notarized."
   fi
 fi
 
 # The same image under a name without the version, uploaded to every release
 # beside the versioned one, so this link always downloads the newest:
-#   https://github.com/alejandrobujan/tendedero/releases/latest/download/Tendedero.dmg
-LATEST="$(dirname "$DMG")/Tendedero.dmg"
-cp -f "$DMG" "$LATEST"
-echo "Copied to $LATEST. Publish both:"
-echo "  gh release create v$VERSION \"$DMG\" \"$LATEST\" ..."
-
-# Keep the Homebrew cask in step: new version and the checksum of this image.
-# Set TAP_DIR to the tap checkout; nothing is committed or pushed here, so the
-# cask never points at a release that is not on GitHub yet.
-TAP_DIR="${TAP_DIR:-$HOME/homebrew-tap}"
-CASK="$TAP_DIR/Casks/tendedero.rb"
-if [ -f "$CASK" ]; then
-  SHA="$(shasum -a 256 "$DMG" | awk '{print $1}')"
-  sed -i '' -E "s/^  version \".*\"/  version \"$VERSION\"/; s/^  sha256 \".*\"/  sha256 \"$SHA\"/" "$CASK"
-  echo "Updated $CASK to $VERSION ($SHA)"
-  echo "After publishing the release: commit and push the tap."
-else
-  echo "No Homebrew cask at $CASK, skipped."
-fi
+#   https://github.com/gordasgdc/pe-sarma/releases/latest/download/PeSarma.dmg
+cp -f "$DMG" "$BUILD_DIR/PeSarma.dmg"
+shasum -a 256 "$DMG" | tee "$DMG.sha256"
+echo "Publish: gh release create v$VERSION \"$DMG\" \"$BUILD_DIR/PeSarma.dmg\" ..."

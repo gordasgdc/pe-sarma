@@ -5,7 +5,7 @@
 // Usage: swift scripts/check-strings.swift
 import Foundation
 
-let sources = URL(fileURLWithPath: "Sources/Tendedero")
+let sources = URL(fileURLWithPath: "Sources/PeSarma")
 let resources = sources.appendingPathComponent("Resources")
 let fm = FileManager.default
 
@@ -42,7 +42,7 @@ for folder in languages {
     let keys = Set(table.keys)
     for key in used.subtracting(keys).sorted() {
         let message = "\(folder): missing \"\(key)\""
-        if folder == "en.lproj" { problems.append(message) } else { warnings.append(message) }
+        if folder == "ro.lproj" { problems.append(message) } else { warnings.append(message) }
     }
     for key in keys.subtracting(used).sorted() { problems.append("\(folder): unused \"\(key)\"") }
 }
