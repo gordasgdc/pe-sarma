@@ -73,7 +73,7 @@ Press ⌃⌥F and type. Only the matches stay on the line: the words in a screen
 
 ## Private by design.
 
-No account. No network. No analytics. Pe sârmă runs entirely on your Mac, reading text in screenshots included, and nothing you hang ever leaves it. If you refuse access to a folder, the app keeps running and screenshots from that folder do not appear on the line. The local diagnostic log is in `~/Library/Logs/PeSarma/`; the Diagnostics menu exports an inspectable ZIP with no screenshots, copied text or paths.
+No account. No analytics. The network is only used when you press “Check for Updates…”, to read a public file on gordas.dev. Pe sârmă runs entirely on your Mac, reading text in screenshots included, and nothing you hang ever leaves it. If you refuse access to a folder, the app keeps running and screenshots from that folder do not appear on the line. The local diagnostic log is in `~/Library/Logs/PeSarma/`; the Diagnostics menu exports an inspectable ZIP with no screenshots, copied text or paths.
 
 <br>
 
@@ -84,7 +84,7 @@ No account. No network. No analytics. Pe sârmă runs entirely on your Mac, read
 | **Compatibility** | macOS 14 Sonoma or later, on Apple silicon and Intel. |
 | **Languages** | Romanian, Spanish, English — following the system language (Romanian by default). Change it any time from the menu bar icon: Language → Română, Español, English or System language. |
 | **Built with** | Swift, AppKit and SwiftUI. |
-| **Network access** | None. |
+| **Network access** | Only for “Check for Updates…”: it reads a public file on gordas.dev. |
 | **Price** | Free: no account, activation key, subscription or trial period. |
 | **License** | MIT for the code. The name and icon of this edition are its own. |
 
@@ -100,6 +100,16 @@ Or with Homebrew:
 
 ```sh
 brew install --cask gordasgdc/tap/pe-sarma
+```
+
+<br>
+
+## Update
+
+From the app: menu bar icon → Check for Updates…. For a copy from the disk image, “Update now” downloads the new version, checks its signature and replaces the app, keeping your settings and language. For a copy installed with Homebrew, the app shows the command below, with a copy button:
+
+```sh
+brew upgrade --cask gordasgdc/tap/pe-sarma
 ```
 
 <br>

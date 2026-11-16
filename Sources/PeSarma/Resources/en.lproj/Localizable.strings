@@ -102,3 +102,30 @@
 "The menu already uses the new language. Open windows and system dialogs follow after reopening Pe sârmă." = "The menu already uses the new language. Open windows and system dialogs follow after reopening Pe sârmă.";
 "Reopen now" = "Reopen now";
 "Later" = "Later";
+
+/* Updates */
+"You have the latest version" = "You have the latest version";
+"Pe sârmă %@ is the newest published version." = "Pe sârmă %@ is the newest published version.";
+"Pe sârmă could not reach the update server. Check your connection and try again." = "Pe sârmă could not reach the update server. Check your connection and try again.";
+"The server answered, but the update information is not valid." = "The server answered, but the update information is not valid.";
+"Could not check for updates" = "Could not check for updates";
+"The rest of Pe sârmă keeps working as usual." = "The rest of Pe sârmă keeps working as usual.";
+"Open the website" = "Open the website";
+"Pe sârmă %@ is available" = "Pe sârmă %@ is available";
+"You have version %@." = "You have version %@.";
+"This copy was installed with Homebrew, so Homebrew updates it. Run in Terminal:" = "This copy was installed with Homebrew, so Homebrew updates it. Run in Terminal:";
+"Copy command" = "Copy command";
+"Update now downloads the new version, checks its signature, replaces this copy and reopens Pe sârmă. Your settings and language are kept." = "Update now downloads the new version, checks its signature, replaces this copy and reopens Pe sârmă. Your settings and language are kept.";
+"Update now" = "Update now";
+"This copy is in a folder the app cannot change by itself. Download the new version and replace this one." = "This copy is in a folder the app cannot change by itself. Download the new version and replace this one.";
+"Download the new version" = "Download the new version";
+"The update could not be installed" = "The update could not be installed";
+"The installed version was left unchanged." = "The installed version was left unchanged.";
+"Downloading…" = "Downloading…";
+"Checking the signature…" = "Checking the signature…";
+"Installing…" = "Installing…";
+"The server answered with status %@." = "The server answered with status %@.";
+"The downloaded file does not match the published one." = "The downloaded file does not match the published one.";
+"The downloaded image does not contain Pe sârmă." = "The downloaded image does not contain Pe sârmă.";
+"The downloaded image has a different version than the announced one." = "The downloaded image has a different version than the announced one.";
+"The signature of the new version is not the developer's." = "The signature of the new version is not the developer's.";

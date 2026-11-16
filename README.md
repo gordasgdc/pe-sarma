@@ -73,7 +73,7 @@ Apasă ⌃⌥F și scrie. Rămân pe fir doar potrivirile: cuvintele din capturi
 
 ## Privat prin construcție.
 
-Fără cont. Fără rețea. Fără statistici. Pe sârmă rulează în întregime pe Mac-ul tău, inclusiv citirea textului din capturi, și nimic din ce agăți nu-l părăsește. Dacă refuzi accesul la un folder, aplicația rămâne pornită, iar capturile din acel folder nu apar pe fir. Jurnalul local de diagnostic este în `~/Library/Logs/PeSarma/`, iar meniul „Diagnostic” exportă un ZIP inspectabil, fără capturi, text copiat sau căi.
+Fără cont. Fără statistici. Rețeaua se folosește doar când apeși „Caută actualizări…”, ca să citească un fișier public de pe gordas.dev. Pe sârmă rulează în întregime pe Mac-ul tău, inclusiv citirea textului din capturi, și nimic din ce agăți nu-l părăsește. Dacă refuzi accesul la un folder, aplicația rămâne pornită, iar capturile din acel folder nu apar pe fir. Jurnalul local de diagnostic este în `~/Library/Logs/PeSarma/`, iar meniul „Diagnostic” exportă un ZIP inspectabil, fără capturi, text copiat sau căi.
 
 <br>
 
@@ -84,7 +84,7 @@ Fără cont. Fără rețea. Fără statistici. Pe sârmă rulează în întregim
 | **Compatibilitate** | macOS 14 Sonoma sau mai nou, Apple Silicon și Intel. |
 | **Limbi** | Română, spaniolă, engleză — după limba sistemului (română implicit). O schimbi oricând din meniul pictogramei: Limbă → Română, Español, English sau Limba sistemului. |
 | **Construită cu** | Swift, AppKit și SwiftUI. |
-| **Acces la rețea** | Niciunul. |
+| **Acces la rețea** | Doar la „Caută actualizări…”: citește un fișier public de pe gordas.dev. |
 | **Preț** | Gratuită: fără cont, cheie de activare, abonament sau perioadă de probă. |
 | **Licență** | MIT pentru cod. Numele și pictograma acestei ediții sunt proprii. |
 
@@ -100,6 +100,16 @@ Sau cu Homebrew:
 
 ```sh
 brew install --cask gordasgdc/tap/pe-sarma
+```
+
+<br>
+
+## Actualizare
+
+Din aplicație: meniul pictogramei → Caută actualizări…. Pentru o copie din imaginea disc, „Actualizează acum” descarcă versiunea nouă, îi verifică semnătura și o înlocuiește, cu setările și limba păstrate. Pentru o copie instalată cu Homebrew, aplicația arată comanda de mai jos, cu buton de copiere:
+
+```sh
+brew upgrade --cask gordasgdc/tap/pe-sarma
 ```
 
 <br>

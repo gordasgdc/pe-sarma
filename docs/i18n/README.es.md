@@ -73,7 +73,7 @@ Pulsa ⌃⌥F y escribe. Solo quedan en el hilo las coincidencias: las palabras 
 
 ## Privada por diseño.
 
-Sin cuenta. Sin red. Sin analíticas. Pe sârmă funciona por completo en tu Mac, incluida la lectura del texto de las capturas, y nada de lo que cuelgas sale de él. Si rechazas el acceso a una carpeta, la app sigue abierta y las capturas de esa carpeta no aparecen en el hilo. El registro local está en `~/Library/Logs/PeSarma/`; el menú «Diagnóstico» exporta un ZIP inspeccionable, sin capturas, texto copiado ni rutas.
+Sin cuenta. Sin analíticas. La red solo se usa cuando pulsas «Buscar actualizaciones…», para leer un archivo público de gordas.dev. Pe sârmă funciona por completo en tu Mac, incluida la lectura del texto de las capturas, y nada de lo que cuelgas sale de él. Si rechazas el acceso a una carpeta, la app sigue abierta y las capturas de esa carpeta no aparecen en el hilo. El registro local está en `~/Library/Logs/PeSarma/`; el menú «Diagnóstico» exporta un ZIP inspeccionable, sin capturas, texto copiado ni rutas.
 
 <br>
 
@@ -84,7 +84,7 @@ Sin cuenta. Sin red. Sin analíticas. Pe sârmă funciona por completo en tu Mac
 | **Compatibilidad** | macOS 14 Sonoma o posterior, en Apple silicon e Intel. |
 | **Idiomas** | Rumano, español, inglés — según el idioma del sistema (rumano por defecto). Cámbialo cuando quieras desde el menú del icono: Idioma → Română, Español, English o Idioma del sistema. |
 | **Hecha con** | Swift, AppKit y SwiftUI. |
-| **Acceso a la red** | Ninguno. |
+| **Acceso a la red** | Solo con «Buscar actualizaciones…»: lee un archivo público de gordas.dev. |
 | **Precio** | Gratuita: sin cuenta, clave de activación, suscripción ni periodo de prueba. |
 | **Licencia** | MIT para el código. El nombre y el icono de esta edición son propios. |
 
@@ -100,6 +100,16 @@ O con Homebrew:
 
 ```sh
 brew install --cask gordasgdc/tap/pe-sarma
+```
+
+<br>
+
+## Actualización
+
+Desde la app: menú del icono → Buscar actualizaciones…. En una copia de la imagen de disco, «Actualizar ahora» descarga la versión nueva, comprueba su firma y reemplaza la app, conservando tus ajustes y el idioma. En una copia instalada con Homebrew, la app muestra el comando de abajo, con botón de copiar:
+
+```sh
+brew upgrade --cask gordasgdc/tap/pe-sarma
 ```
 
 <br>

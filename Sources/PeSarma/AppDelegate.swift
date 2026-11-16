@@ -1298,11 +1298,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         menu.addItem(languageItem())
 
-        // The app never connects to anything, so it cannot tell when a new
-        // version is out. The website can: it is opened with this version
-        // and language, and says whether there is a newer one.
-        menu.addItem(ClosureMenuItem(L("Check for Updates…")) {
-            NSWorkspace.shared.open(AppDelegate.updatesURL)
+        // The only thing here that uses the network, and only when asked: it
+        // reads the public update feed and shows the result in the app.
+        menu.addItem(ClosureMenuItem(L("Check for Updates…")) { [weak self] in
+            self?.checkForUpdates()
         })
         menu.addItem(ClosureMenuItem(L("About Pe sârmă")) {
             AppDelegate.showAbout()
@@ -1416,6 +1415,116 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if alert.runModal() == .alertFirstButtonReturn { Self.relaunch() }
     }
 
+    // MARK: Updates
+
+    private var checkingForUpdates = false
+    private var updateWindow: NSPanel?
+
+    /// Asks the public feed and tells the user one of: this is the latest
+    /// version, there is a newer one (with how to get it), or the check failed.
+    private func checkForUpdates() {
+        guard !checkingForUpdates else { return }
+        checkingForUpdates = true
+        let current = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0"
+        let language = AppLanguage.active
+        Task { @MainActor in
+            let result = await Updates.check(current: current, language: language)
+            checkingForUpdates = false
+            switch result {
+            case .upToDate(let cur, let published):
+                Diag.log(.info, "update.check", ["result": "latest", "current": cur, "published": published])
+                present(L("You have the latest version"),
+                        L("Pe sârmă %@ is the newest published version.").replacingOccurrences(of: "%@", with: cur))
+            case .newer(let offer):
+                Diag.log(.info, "update.check", ["result": "newer", "current": current, "published": offer.version,
+                                                 "install": Updates.installKind() == .homebrew ? "homebrew" : "direct"])
+                offerUpdate(offer, current: current)
+            case .unreachable(let why):
+                Diag.log(.warning, "update.check", ["result": "unreachable", "why": why])
+                failed(L("Pe sârmă could not reach the update server. Check your connection and try again."))
+            case .invalidFeed(let field):
+                Diag.log(.warning, "update.check", ["result": "invalid", "field": field])
+                failed(L("The server answered, but the update information is not valid."))
+            }
+        }
+    }
+
+    @discardableResult
+    private func present(_ title: String, _ text: String, accessory: NSView? = nil, buttons: [String] = ["OK"]) -> NSApplication.ModalResponse {
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = text
+        alert.accessoryView = accessory
+        for b in buttons { alert.addButton(withTitle: b) }
+        NSApp.activate(ignoringOtherApps: true)
+        return alert.runModal()
+    }
+
+    private func failed(_ reason: String) {
+        let r = present(L("Could not check for updates"), reason + "\n\n" + L("The rest of Pe sârmă keeps working as usual."),
+                        accessory: nil, buttons: ["OK", L("Open the website")])
+        if r == .alertSecondButtonReturn { NSWorkspace.shared.open(Self.updatesURL) }
+    }
+
+    private func offerUpdate(_ offer: UpdateOffer, current: String) {
+        let title = L("Pe sârmă %@ is available").replacingOccurrences(of: "%@", with: offer.version)
+        let head = (offer.changes.isEmpty ? "" : offer.changes + "\n\n")
+            + L("You have version %@.").replacingOccurrences(of: "%@", with: current)
+        if Updates.installKind() == .homebrew {
+            let field = NSTextField(string: Updates.brewCommand)
+            field.isEditable = false
+            field.isSelectable = true
+            field.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
+            field.frame = NSRect(x: 0, y: 0, width: 360, height: 24)
+            let r = present(title, head + "\n\n" + L("This copy was installed with Homebrew, so Homebrew updates it. Run in Terminal:"),
+                            accessory: field, buttons: [L("Copy command"), L("Later")])
+            if r == .alertFirstButtonReturn {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(Updates.brewCommand, forType: .string)
+            }
+        } else if Updates.canReplaceInPlace() {
+            let r = present(title, head + "\n\n" + L("Update now downloads the new version, checks its signature, replaces this copy and reopens Pe sârmă. Your settings and language are kept."),
+                            accessory: nil, buttons: [L("Update now"), L("Later")])
+            if r == .alertFirstButtonReturn { runUpdate(offer) }
+        } else {
+            let r = present(title, head + "\n\n" + L("This copy is in a folder the app cannot change by itself. Download the new version and replace this one."),
+                            accessory: nil, buttons: [L("Download the new version"), L("Later")])
+            if r == .alertFirstButtonReturn { NSWorkspace.shared.open(offer.url) }
+        }
+    }
+
+    private func runUpdate(_ offer: UpdateOffer) {
+        let panel = NSPanel(contentRect: NSRect(x: 0, y: 0, width: 360, height: 80), styleMask: [.titled], backing: .buffered, defer: false)
+        panel.title = "Pe sârmă"
+        let label = NSTextField(labelWithString: "")
+        let spinner = NSProgressIndicator()
+        spinner.style = .spinning
+        spinner.isIndeterminate = true
+        spinner.startAnimation(nil)
+        let stack = NSStackView(views: [spinner, label])
+        stack.spacing = 14
+        stack.edgeInsets = NSEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+        panel.contentView = stack
+        panel.center()
+        panel.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        updateWindow = panel
+        Task { @MainActor in
+            do {
+                let app = try await Updates.install(offer) { label.stringValue = $0 }
+                Diag.log(.info, "update.install", ["to": offer.version, "result": "ok"])
+                Updates.relaunchAfterExit(app)
+                NSApp.terminate(nil)
+            } catch {
+                panel.orderOut(nil)
+                updateWindow = nil
+                Diag.log(.error, "update.install", ["to": offer.version, "result": "failed", "why": error.localizedDescription])
+                present(L("The update could not be installed"),
+                        error.localizedDescription + "\n\n" + L("The installed version was left unchanged."))
+            }
+        }
+    }
+
     /// Starts a fresh copy once this one has quit. Quitting runs
     /// applicationWillTerminate, which puts the macOS capture settings back.
     private static func relaunch() {
@@ -1426,8 +1535,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         NSApp.terminate(nil)
     }
 
-    /// gordas.dev/pe-sarma with the running version and the app's language. The
-    /// app itself never uses the network: the page opens in the browser.
+    /// gordas.dev/pe-sarma with the running version and the app's language,
+    /// for when the check cannot be completed in the app.
     private static var updatesURL: URL {
         var components = URLComponents(string: "https://gordas.dev/pe-sarma/")!
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
