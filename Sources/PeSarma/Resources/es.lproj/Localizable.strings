@@ -94,3 +94,11 @@
 "Detailed log until quit" = "Registro detallado hasta salir";
 "The package holds only local logs and technical settings. It is not sent anywhere." = "El paquete solo contiene registros locales y ajustes técnicos. No se envía a ningún sitio.";
 "Could not export the diagnostic" = "No se pudo exportar el diagnóstico";
+
+/* Language menu */
+"Language" = "Idioma";
+"System language" = "Idioma del sistema";
+"Language changed" = "Idioma cambiado";
+"The menu already uses the new language. Open windows and system dialogs follow after reopening Pe sârmă." = "El menú ya usa el nuevo idioma. Las ventanas abiertas y los diálogos del sistema lo toman al reabrir Pe sârmă.";
+"Reopen now" = "Reabrir ahora";
+"Later" = "Más tarde";

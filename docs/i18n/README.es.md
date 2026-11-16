@@ -82,7 +82,7 @@ Sin cuenta. Sin red. Sin analíticas. Pe sârmă funciona por completo en tu Mac
 | | |
 |:--|:--|
 | **Compatibilidad** | macOS 14 Sonoma o posterior, en Apple silicon e Intel. |
-| **Idiomas** | Rumano, español, inglés — según el idioma del sistema (rumano por defecto) o el idioma fijado para la app. |
+| **Idiomas** | Rumano, español, inglés — según el idioma del sistema (rumano por defecto). Cámbialo cuando quieras desde el menú del icono: Idioma → Română, Español, English o Idioma del sistema. |
 | **Hecha con** | Swift, AppKit y SwiftUI. |
 | **Acceso a la red** | Ninguno. |
 | **Precio** | Gratuita: sin cuenta, clave de activación, suscripción ni periodo de prueba. |

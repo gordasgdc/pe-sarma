@@ -94,3 +94,11 @@
 "Detailed log until quit" = "Detailed log until quit";
 "The package holds only local logs and technical settings. It is not sent anywhere." = "The package holds only local logs and technical settings. It is not sent anywhere.";
 "Could not export the diagnostic" = "Could not export the diagnostic";
+
+/* Language menu */
+"Language" = "Language";
+"System language" = "System language";
+"Language changed" = "Language changed";
+"The menu already uses the new language. Open windows and system dialogs follow after reopening Pe sârmă." = "The menu already uses the new language. Open windows and system dialogs follow after reopening Pe sârmă.";
+"Reopen now" = "Reopen now";
+"Later" = "Later";

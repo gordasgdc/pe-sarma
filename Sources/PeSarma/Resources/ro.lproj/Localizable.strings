@@ -94,3 +94,11 @@
 "Detailed log until quit" = "Jurnal detaliat până la închidere";
 "The package holds only local logs and technical settings. It is not sent anywhere." = "Pachetul conține doar jurnale locale și setări tehnice. Nu este trimis nicăieri.";
 "Could not export the diagnostic" = "Nu am putut exporta diagnosticul";
+
+/* Language menu */
+"Language" = "Limbă";
+"System language" = "Limba sistemului";
+"Language changed" = "Limba a fost schimbată";
+"The menu already uses the new language. Open windows and system dialogs follow after reopening Pe sârmă." = "Meniul folosește deja limba nouă. Ferestrele deschise și dialogurile de sistem o preiau după redeschiderea aplicației Pe sârmă.";
+"Reopen now" = "Redeschide acum";
+"Later" = "Mai târziu";

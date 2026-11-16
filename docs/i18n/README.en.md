@@ -82,7 +82,7 @@ No account. No network. No analytics. Pe sârmă runs entirely on your Mac, read
 | | |
 |:--|:--|
 | **Compatibility** | macOS 14 Sonoma or later, on Apple silicon and Intel. |
-| **Languages** | Romanian, Spanish, English — following the system language (Romanian by default) or the language set for the app. |
+| **Languages** | Romanian, Spanish, English — following the system language (Romanian by default). Change it any time from the menu bar icon: Language → Română, Español, English or System language. |
 | **Built with** | Swift, AppKit and SwiftUI. |
 | **Network access** | None. |
 | **Price** | Free: no account, activation key, subscription or trial period. |

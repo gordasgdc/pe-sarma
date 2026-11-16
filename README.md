@@ -82,7 +82,7 @@ Fără cont. Fără rețea. Fără statistici. Pe sârmă rulează în întregim
 | | |
 |:--|:--|
 | **Compatibilitate** | macOS 14 Sonoma sau mai nou, Apple Silicon și Intel. |
-| **Limbi** | Română, spaniolă, engleză — după limba sistemului (română implicit) sau limba setată pentru aplicație. |
+| **Limbi** | Română, spaniolă, engleză — după limba sistemului (română implicit). O schimbi oricând din meniul pictogramei: Limbă → Română, Español, English sau Limba sistemului. |
 | **Construită cu** | Swift, AppKit și SwiftUI. |
 | **Acces la rețea** | Niciunul. |
 | **Preț** | Gratuită: fără cont, cheie de activare, abonament sau perioadă de probă. |

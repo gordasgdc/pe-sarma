@@ -71,7 +71,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        Diag.log(.info, "app.start", ["inbox": "\(Inbox.isEnabled)", "locale": Bundle.main.preferredLocalizations.first ?? "-"])
+        Diag.log(.info, "app.start", ["inbox": "\(Inbox.isEnabled)", "locale": AppLanguage.active, "languageChosen": AppLanguage.chosen ?? "system"])
         let host = NSHostingView(rootView: LineView(line: line))
         host.sizingOptions = []
         panel = LinePanel(content: host)
@@ -80,6 +80,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         if Inbox.isEnabled { Inbox.apply() }
         restoreSettingsOnTermination()
+        #if MENU_PROBE
+        installMenuProbe()
+        #endif
         startWatcher()
         clipboardWatcher = ClipboardWatcher { [weak self] url in self?.hangCapture(url) }
         if ClipboardWatcher.isEnabled { clipboardWatcher.start() }
@@ -1293,6 +1296,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         login.state = SMAppService.mainApp.status == .enabled ? .on : .off
         menu.addItem(login)
 
+        menu.addItem(languageItem())
+
         // The app never connects to anything, so it cannot tell when a new
         // version is out. The website can: it is opened with this version
         // and language, and says whether there is a newer one.
@@ -1331,15 +1336,103 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         })
     }
 
+
+    #if MENU_PROBE
+    // Test builds only (compiled with -DMENU_PROBE, never shipped). The menu
+    // bar item cannot be reached by accessibility on this macOS, so a test
+    // asks the real menu object, built by the real menuNeedsUpdate, to write
+    // its titles (SIGUSR1) or to run an item by its path (SIGUSR2, path read
+    // from $PESARMA_PROBE_DIR/pick).
+    private static var probeSources: [DispatchSourceSignal] = []
+
+    private func installMenuProbe() {
+        guard let dir = ProcessInfo.processInfo.environment["PESARMA_PROBE_DIR"] else { return }
+        for sig in [SIGUSR1, SIGUSR2] {
+            signal(sig, SIG_IGN)
+            let src = DispatchSource.makeSignalSource(signal: sig, queue: .main)
+            src.setEventHandler { [weak self] in
+                MainActor.assumeIsolated {
+                    guard let self, let menu = self.statusItem.menu else { return }
+                    self.menuNeedsUpdate(menu)
+                    if sig == SIGUSR1 {
+                        func dump(_ m: NSMenu, _ depth: Int) -> String {
+                            m.items.map { item in
+                                let line = String(repeating: "  ", count: depth) + (item.isSeparatorItem ? "---" : item.title) + (item.state == .on ? " [x]" : "")
+                                return line + "\n" + (item.submenu.map { dump($0, depth + 1) } ?? "")
+                            }.joined()
+                        }
+                        try? dump(menu, 0).write(toFile: dir + "/menu.txt", atomically: true, encoding: .utf8)
+                    } else if let path = try? String(contentsOfFile: dir + "/pick", encoding: .utf8) {
+                        var current = menu
+                        var target: NSMenuItem?
+                        for part in path.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: "/") {
+                            target = current.items.first { $0.title == String(part) }
+                            if let sub = target?.submenu { current = sub }
+                        }
+                        if let target, let action = target.action { NSApp.sendAction(action, to: target.target, from: target) }
+                    }
+                }
+            }
+            src.resume()
+            Self.probeSources.append(src)
+        }
+    }
+    #endif
+
+    // MARK: Language
+
+    /// Language submenu: each language in its own name, a check on the current
+    /// choice, and "System language" to go back to the automatic pick.
+    private func languageItem() -> NSMenuItem {
+        let item = NSMenuItem(title: L("Language"), action: nil, keyEquivalent: "")
+        let submenu = NSMenu()
+        for choice in AppLanguage.choices {
+            let entry = ClosureMenuItem(choice.name) { [weak self] in self?.setLanguage(choice.code) }
+            entry.state = AppLanguage.chosen == choice.code ? .on : .off
+            submenu.addItem(entry)
+        }
+        submenu.addItem(.separator())
+        let system = ClosureMenuItem(L("System language")) { [weak self] in self?.setLanguage(nil) }
+        system.state = AppLanguage.chosen == nil ? .on : .off
+        submenu.addItem(system)
+        item.submenu = submenu
+        return item
+    }
+
+    /// The menu and everything opened from now on use the new language at
+    /// once; windows already open and system panels pick it up when the app is
+    /// reopened, so the user is offered that, with settings restored on quit.
+    private func setLanguage(_ code: String?) {
+        guard code != AppLanguage.chosen else { return }
+        AppLanguage.chosen = code
+        Diag.log(.info, "language.change", ["to": code ?? "system", "active": AppLanguage.active])
+        updateStatusIcon()
+        let alert = NSAlert()
+        alert.messageText = L("Language changed")
+        alert.informativeText = L("The menu already uses the new language. Open windows and system dialogs follow after reopening Pe sârmă.")
+        alert.addButton(withTitle: L("Reopen now"))
+        alert.addButton(withTitle: L("Later"))
+        NSApp.activate(ignoringOtherApps: true)
+        if alert.runModal() == .alertFirstButtonReturn { Self.relaunch() }
+    }
+
+    /// Starts a fresh copy once this one has quit. Quitting runs
+    /// applicationWillTerminate, which puts the macOS capture settings back.
+    private static func relaunch() {
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/bin/sh")
+        task.arguments = ["-c", "sleep 1; /usr/bin/open \"$0\"", Bundle.main.bundlePath]
+        try? task.run()
+        NSApp.terminate(nil)
+    }
+
     /// gordas.dev/pe-sarma with the running version and the app's language. The
     /// app itself never uses the network: the page opens in the browser.
     private static var updatesURL: URL {
         var components = URLComponents(string: "https://gordas.dev/pe-sarma/")!
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
         var query = [URLQueryItem(name: "update", value: version)]
-        if let language = Bundle.main.preferredLocalizations.first, ["ro", "es", "en"].contains(language) {
-            query.append(URLQueryItem(name: "lang", value: language))
-        }
+        query.append(URLQueryItem(name: "lang", value: AppLanguage.active))
         components.queryItems = query
         return components.url!
     }
