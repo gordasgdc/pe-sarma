@@ -56,6 +56,12 @@ Pe sârmă urmărește folderul în care macOS salvează capturile (implicit al 
 
 Deschide imaginea disc `PeSarma-<versiune>.dmg` din [Releases](https://github.com/gordasgdc/pe-sarma/releases) și trage aplicația în Aplicații. Este semnată cu Developer ID și notarizată de Apple.
 
+Sau cu Homebrew (același DMG notarizat din Releases):
+
+```sh
+brew install --cask gordasgdc/tap/pe-sarma
+```
+
 ## Compilare din sursă
 
 ```sh
@@ -85,7 +91,7 @@ Screenshots and everything you copy hang on a line right under the menu bar. Sea
 
 Site and interactive demo: https://gordas.dev/pe-sarma/ · Download: https://github.com/gordasgdc/pe-sarma/releases/latest/download/PeSarma.dmg
 
-Based on [Tendedero](https://github.com/alejandrobujan/tendedero) by Alejandro Buján (MIT). Gestures: click copies, long press annotates, double click previews, drag out sends a copy, Shift-click selects several, ⌘Z undoes, ⌃⌥F searches. Build and logs: see the Romanian sections above.
+Install: `brew install --cask gordasgdc/tap/pe-sarma` or the DMG from Releases. Based on [Tendedero](https://github.com/alejandrobujan/tendedero) by Alejandro Buján (MIT). Gestures: click copies, long press annotates, double click previews, drag out sends a copy, Shift-click selects several, ⌘Z undoes, ⌃⌥F searches. Build and logs: see the Romanian sections above.
 
 ## Español
 
@@ -95,4 +101,4 @@ Las capturas de pantalla y todo lo que copias se cuelgan de un hilo bajo la barr
 
 Sitio y demo interactiva: https://gordas.dev/pe-sarma/ · Descarga: https://github.com/gordasgdc/pe-sarma/releases/latest/download/PeSarma.dmg
 
-Basada en [Tendedero](https://github.com/alejandrobujan/tendedero) de Alejandro Buján (MIT). Gestos: clic copia, pulsación larga anota, doble clic previsualiza, arrastrar fuera envía una copia, Shift-clic selecciona varias, ⌘Z deshace, ⌃⌥F busca.
+Instalación: `brew install --cask gordasgdc/tap/pe-sarma` o el DMG de Releases. Basada en [Tendedero](https://github.com/alejandrobujan/tendedero) de Alejandro Buján (MIT). Gestos: clic copia, pulsación larga anota, doble clic previsualiza, arrastrar fuera envía una copia, Shift-clic selecciona varias, ⌘Z deshace, ⌃⌥F busca.
