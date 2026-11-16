@@ -19,7 +19,7 @@ cat > "$CHECK_APP/Contents/Info.plist" <<'PLIST'
 </dict></plist>
 PLIST
 SOURCES=()
-for name in Line LineView LinePanel PeggedView GrabArea Share Markup Trim QuickLook Localization ScreenshotWatcher SearchIndex NoteSheet Held Markdown; do
+for name in Line LineView LinePanel PeggedView GrabArea Share Markup Trim QuickLook Localization ScreenshotWatcher SearchIndex NoteSheet Held Markdown Diagnostics; do
     SOURCES+=("Sources/PeSarma/$name.swift")
 done
 swiftc -module-name PeSarma -target "$(uname -m)-apple-macosx14.0" -parse-as-library "${SOURCES[@]}" scripts/test-selection.swift \

@@ -1,0 +1,5 @@
+"CFBundleDisplayName" = "Pe sârmă";
+"CFBundleName" = "Pe sârmă";
+"NSDesktopFolderUsageDescription" = "Pe sârmă watches the folder where macOS saves your screenshots so it can hang them on the line.";
+"NSDocumentsFolderUsageDescription" = "Pe sârmă watches the folder you chose so it can hang new images on the line.";
+"NSDownloadsFolderUsageDescription" = "Pe sârmă watches the folder you chose so it can hang new images on the line.";

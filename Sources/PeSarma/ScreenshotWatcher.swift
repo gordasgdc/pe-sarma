@@ -68,7 +68,23 @@ final class ScreenshotWatcher {
     /// Anything created after the app launched counts as new, even if it
     /// landed before the watcher was ready (macOS may be asking for Desktop
     /// access at that moment).
-    private let launchDate = Date()
+    /// What was in the folder before this date is old and is not hung. A
+    /// watcher created in the first seconds of the process counts from the
+    /// process start, so an image that lands before the watcher exists is
+    /// not mistaken for an old one. A later watcher counts from its own start.
+    private let launchDate: Date = {
+        let now = Date()
+        return now.timeIntervalSince(ScreenshotWatcher.processStart) < 10 ? ScreenshotWatcher.processStart : now
+    }()
+
+    private static let processStart: Date = {
+        var info = kinfo_proc()
+        var size = MemoryLayout<kinfo_proc>.stride
+        var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()]
+        guard sysctl(&mib, 4, &info, &size, nil, 0) == 0 else { return Date() }
+        let t = info.kp_proc.p_un.__p_starttime
+        return Date(timeIntervalSince1970: Double(t.tv_sec) + Double(t.tv_usec) / 1_000_000)
+    }()
 
     /// The folder is opened off the main thread, because `open()` blocks while
     /// macOS asks whether Pe sârmă may look inside it. On the Desktop that is

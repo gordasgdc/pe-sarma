@@ -1320,12 +1320,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         })
     }
 
-    /// gordas.dev/pe-sarma with the running version. The app itself never uses
-    /// the network: the page opens in the browser.
+    /// gordas.dev/pe-sarma with the running version and the app's language. The
+    /// app itself never uses the network: the page opens in the browser.
     private static var updatesURL: URL {
         var components = URLComponents(string: "https://gordas.dev/pe-sarma/")!
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
-        let query = [URLQueryItem(name: "update", value: version)]
+        var query = [URLQueryItem(name: "update", value: version)]
+        if let language = Bundle.main.preferredLocalizations.first, ["ro", "es", "en"].contains(language) {
+            query.append(URLQueryItem(name: "lang", value: language))
+        }
         components.queryItems = query
         return components.url!
     }

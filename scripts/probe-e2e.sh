@@ -38,7 +38,6 @@ check "app starts" alive
 wait_for '[ "$(defaults read com.apple.screencapture location-screenshot 2>/dev/null)" = "$LOC" ]' x 10
 check "screenshot location points to the app folder" '[ "$(defaults read com.apple.screencapture location-screenshot 2>/dev/null)" = "$LOC" ]'
 check "floating thumbnail is off" '[ "$(defaults read com.apple.screencapture show-thumbnail 2>/dev/null)" = 0 ]'
-sleep 4
 mkdir -p "$LOC"; cp "$PNG" "$LOC/Captura probă.png"
 check "OCR indexes Romanian diacritics (search folds to ascii)" 'wait_for "grep -q -i sedinta \"$SUP/SearchIndex.json\" 2>/dev/null" x 40'
 check "OCR text kept without diacritics for search (sarma)" 'grep -q -i "pe sarma" "$SUP/SearchIndex.json"'

@@ -1,2 +1,5 @@
 "CFBundleDisplayName" = "Pe sârmă";
 "CFBundleName" = "Pe sârmă";
+"NSDesktopFolderUsageDescription" = "Pe sârmă urmărește folderul în care macOS salvează capturile tale, ca să le poată agăța pe fir.";
+"NSDocumentsFolderUsageDescription" = "Pe sârmă urmărește folderul ales de tine, ca să agațe pe fir imaginile noi.";
+"NSDownloadsFolderUsageDescription" = "Pe sârmă urmărește folderul ales de tine, ca să agațe pe fir imaginile noi.";

@@ -42,7 +42,7 @@ for folder in languages {
     let keys = Set(table.keys)
     for key in used.subtracting(keys).sorted() {
         let message = "\(folder): missing \"\(key)\""
-        if folder == "ro.lproj" { problems.append(message) } else { warnings.append(message) }
+        problems.append(message)
     }
     for key in keys.subtracting(used).sorted() { problems.append("\(folder): unused \"\(key)\"") }
 }

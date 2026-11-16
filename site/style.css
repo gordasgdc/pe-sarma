@@ -83,3 +83,13 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--mute);fo
 footer .row{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:8px}
 @media (max-width:640px){.mac{height:470px}.gest div{grid-template-columns:1fr;gap:2px}.preview{inset:36px 4% 96px}header.top nav{display:none}.card{width:132px}.card .face{height:112px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+.lang{display:flex;gap:4px;margin-left:8px}
+.lang button{background:var(--panel);color:var(--mute);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font:600 13px/1 inherit;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:#fff}
+header.top nav{margin-left:auto}
+h3.opt{margin:18px 0 8px;font-size:16px;color:var(--mute);font-weight:600}
+.cmd{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.cmd code{flex:1;min-width:0;overflow-wrap:anywhere;font:14px ui-monospace,Menlo,monospace;color:var(--ink)}
+.cmd .btn{padding:6px 14px}
+.facts span{display:block}
+@media (max-width:640px){header.top nav{display:none}.lang{margin-left:auto}}
